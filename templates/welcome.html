@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block main %}
+    <h1>What activities would you like to track?</h1>
+    <form action="/home" method="post">
+        {% for habit in habits %}
+        <input type="checkbox" id="habit-{{ habit['id'] }}" name="{{ habit['name'] }}" value="{{ habit['value'] }}"><label for="{{ habit['name'] }}">{{ habit['name'] }} {{habit['value']}}</label><br>
+        {% endfor %}
+        <button type="submit">Track habits</button>
+    </form>
+{% endblock %}
