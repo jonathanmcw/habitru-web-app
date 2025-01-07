@@ -1,28 +1,98 @@
+/* App-wide CSS */
+:root {
+    --standard-width: 380px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 html {
-    background-color: grey;
+    position: relative;
+}
+
+body {
+    background-color: #fff;
+    color: #000;
     font-family: Arial, Helvetica, sans-serif;
 }
 
+h1{
+    /* margin-bottom: 0px; */
+}
 
-/* home page */
-.container form {
+button {
+    min-height: 40px; 
+    background-color: #666;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    width: var(--standard-width);
+}
+
+.nav {
+    display:block;
+    /* position: fixed; */
+    top:0px;
+    z-index: 1000;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    /* padding: 0 8px 16px; */
+    min-height: 64px; 
+
+    background: linear-gradient(to bottom, #eee, transparent);
+    /* height: 48px; */
+    /* border-bottom: solid 1px #ccc; */
+}
+
+.nav > .left {
+    left: 0;
+    display: flex;
+    gap: 16px;
+    padding-left: 16px;
+}
+
+.nav > .right {
+    right: 0;
+    padding-right: 16px;
+}
+
+/* Daily View */
+
+#daily-view.container {
+    padding-top: 88px;
+    display: flex;
+    margin-top: 120px; 
     flex-direction: column;
+    align-items: center;
     gap: 8px;
+    
 }
 
 .habit-item {
     display: flex;
+    width: var(--standard-width);
     flex-direction: row;
-    background-color: lightgrey;
+    background-color: #fff;
     min-height: 48px;
     padding: 16px 16px; 
     gap: 12px;
     border-radius: 6px;
+    transition: opacity 0.2s ease-in, margin-top 0.5s ease-in-out; /* Add transition for disappearing at margin-top*/
+}
+
+.habit-item.fade-out {
+    opacity: 0; /* fade out effect */
+    margin-top: -80px; /* adjust this based on height of items */
 }
 
 .habit-item:hover {
-    background-color: lightgrey;
+    cursor: pointer;
+    background-color: #fafafa;
 }
 
 .habit-item > * {
@@ -47,26 +117,101 @@ html {
     margin: 0px
 }
 
-.habit-item.add {
+.add-habit-item {
+    /* need to see if we ne */
+    float: right;
+    margin-top:8px;
+    width: 80px;
+    /* width: var(--standard-width); */
+    padding: 4px 16px; 
     cursor: pointer;
-    background-color: lightgrey;
-    border: 1px dotted grey;
+    background-color: #ddd;
+    border: 1px solid #ccc;
     color: darkgrey;
+    border-radius: 8px;
+    text-align: center;
+    user-select: none; 
+    font-size: 28px;
+    /* transition: margin-top 0.3s ease-out, 
+        width 0.3s ease-out, 
+        padding 0.3s ease-out, 
+        background-color 0.3s ease-out, 
+        color 0.3s ease-out; */
+    /* transition:cubic-bezier(1, 0, 0, 1); */
 }
 
-.habit-item.add:hover {
-    background-color: lightgrey;
-    color: black;
+.add-habit-item:hover {
+    /* margin-top: 4px;
+    width: 180px;
+    padding: 8px 16px; */
+    background-color: #666;
+    color: #fff;
 }
 
+/* Monthly view */
+
+.nav > .middle {
+}
+
+section.header {
+    height: 120px;
+}
+
+#monthly-view.container {
+    /* padding-top: 128px; */
+    position: relative;
+    top: 64px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center; /* Center horizontally */
+    /* height: 100vh;  */
+}
+
+#monthly-view.container > .content {
+    display: flex; 
+    flex-direction: row;
+    justify-content: center;
+    margin: 0 auto 8px;
+    gap: 0px;
+}
+
+.week-col {
+    display: flex;
+    flex-direction: column;
+    /* gap: 2px; */
+}
 
 /* summary page */
 .bubble-sm {
-    width: 20px;
-    height: 20px;
-    background-color: white;
-    border-radius: 16rem;
-    border: 1px solid #333;
+    display: block;
+    width: 9px;
+    height: 9px;
+    border: 1px solid #fff;
+    background-color: #ddd;
+    border-radius: 1px;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.bubbleInFocus {
+    position: absolute;
+    width: 24px;
+    height: 24px; 
+    border: solid 1px #333;
+    border-radius: 4px;
+    background-color: #333;
+    z-index: 1000;
+    pointer-events: none; /* Ensure it doesn't interfere with other elements */
+}
+
+.bubble-sm.task-started {
+    background-color: lightgreen;
+}
+
+.bubble-sm.task-completed {
+    background-color: darkgreen;
 }
 
 /* might as well record those pop bubble sound */
+

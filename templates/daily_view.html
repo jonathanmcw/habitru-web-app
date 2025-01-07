@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block main %}
+    <div class="nav">
+        <div class="left">
+            <!-- <a href="/profile">Profile</a> -->
+            <strong>Daily</strong>
+            <a href="/monthly_view">Monthly</a>
+        </div>
+        <h1 class="year">< {{ current_time }} ></h1>
+        <div class="right">
+            <button class="add-habit-item">+</button>
+        </div>
+    </div>
+    <form method="post">
+        <div id="daily-view" class="container">        
+            <!-- <h1>Today</h1> -->
+            {% for habit in habits %}
+            <div id="habit-{{ habit['id']}}" class="habit-item" name="{{ habit['name'] }}" value="{{ habit['value'] }}">
+                <div class="bubble-btn"></div><div class="desc"><p><strong>{{ habit['name'] }}</strong></p><p>{{ habit['value'] }}</p></div>
+            </div>
+            {% endfor %}
+        </div>
+    </form>
+    <script>
+        const btns = document.querySelectorAll(".habit-item");
+        let intervalId;
+        let secondsPassed = 0;
+
+        btns.forEach((btn) => {
+            btn.addEventListener("mousedown", () => { 
+                console.log("down");
+                intervalId = setInterval(() => {
+                    secondsPassed++;
+                    console.log(`${secondsPassed} session(s) passed`);
+                    if (secondsPassed >= 4) {
+                        clearInterval(intervalId);
+                        console.log("Timer stopped");
+                    } 
+                }, 1000);
+            }); 
+            btn.addEventListener("mouseup", () => { 
+                clearInterval(intervalId);
+                secondsPassed = 0;
+                console.log("Timer reset");
+            });
+
+            btn.addEventListener("click", async (e) => { 
+                console.log("click");
+                // TO DO: MARK ITEM AS DONE
+                const parent = e.target.closest('.habit-item');
+                const habitId = parent.id.split('-')[1];
+                const response = await fetch(`/mark_done/${habitId}`, {method: 'POST'});
+                
+                if (response.ok) {
+                    parent.classList.add('fade-out');
+                    setTimeout(() => {
+                        parent.remove();
+                    }, 500); // To match with the duration of CSS transition
+                } else {
+                    console.error('Failed to mark item as done');
+                }
+                 
+            });
+        });
+        // btn.addEventListener("click", );
+    </script>
+
+{% endblock %}
