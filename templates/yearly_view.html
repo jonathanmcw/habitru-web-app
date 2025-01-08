@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block main %}    
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const bubbles = document.querySelectorAll(".bubble-sm");
+        bubbles.forEach((bubble) => {
+            bubble.addEventListener("mouseover", (e) => {
+                const mouseX = e.pageX;
+                const mouseY = e.pageY;
+                const bubbleInFocus = document.createElement("div");
+                bubbleInFocus.classList.add("bubbleInFocus");
+                document.body.appendChild(bubbleInFocus);
+                bubbleInFocus.style.left = `${e.pageX - 12}px`;
+                bubbleInFocus.style.top = `${e.pageY - 12}px`;
+                const summary = document.getElementById("activity-summary");
+                // summary.textContent = e.target.attribute("id");
+            });
+            bubble.addEventListener("mouseout", () => {
+                const bubbleInFocus = document.querySelector(".bubbleInFocus");
+                if (bubbleInFocus) {
+                    bubbleInFocus.remove();
+                }
+            });
+        });
+    });
+</script>
+    <!-- <h1>summary goes here</h1> -->
+    <div id="monthly-view" class="container">
+        {% for habit in habits %}            
+        <h2 class="habit-name">{{ habit['name'] }}</h2>
+        <div class="content">
+            {% for week in range(52) %}
+            <div class="week-col">
+                {% for day in range(7) %}
+                  <div id="habit-{{habit}}-day-{{week * 7 + day + 1}}" class="bubble-sm"></div>
+                {% endfor %}
+            </div>
+
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="activity-summary">Day X</div>
+{% endblock %}
+

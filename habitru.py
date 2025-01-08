@@ -48,70 +48,88 @@ def welcome():
     conn = get_db_connection()
     habits = conn.execute('SELECT * FROM habits').fetchall()
     conn.close()
-
     # TODO: Based on what the option that I have selected, the options should be shown to be in Today
-
-    # habits = [
-    #     {'name': 'wake-up', 'label': 'Wake up', 'value': 'wake-up',},
-    #     {'name': 'workout', 'label': 'Workout', 'value': 'workout',},
-    #     {'name': 'diet', 'label': 'Diet', 'value': 'diet',}
-    # ]
-    return render_template('welcome.html', habits = habits)
+    return render_template('welcome.html', habits = habits, current_url=request.path)
     # return "<html><body>what exercise would you like to track?</body></html>"
 
 @app.route("/daily_view", methods=["GET","POST"])
 def daily_view():
     conn = get_db_connection()
     habits = conn.execute('SELECT * FROM habits').fetchall()
+
+    # if there is a new habit
+    # new_habit = request("new-tracking")
+    
     conn.close()
-    # habits = [
-    #         {'name': 'wake-up', 'label': 'Wake up', 'value': 'wake-up',},
-    #         {'name': 'workout', 'label': 'Workout', 'value': 'workout',},
-    #         {'name': 'diet', 'label': 'Diet', 'value': 'diet',}
-    #     ]
     # TODO: Enable user to switch day 
     # TODO: How should I design my database to have task of different dates? 
     current_time = datetime.now().strftime("%-d %b %Y")
     if request.method == "POST":
+        
         return redirect(url_for('daily_view'))
-    return render_template('daily_view.html', habits = habits, current_time = current_time )
+    
+    return render_template('daily_view.html', habits = habits, current_time = current_time, current_url=request.path )
 
 # Update / Add view
 
 @app.route("/monthly_view")
 def monthly_view():
+    current_time = datetime.now().strftime("%b %Y")
+
     conn = get_db_connection()
     habits = conn.execute('SELECT * FROM habits').fetchall()
     conn.close()
     
-    # dates = [f"2025-01-{i+1:02d}" for i in range(30)]
-    dates = [f"{i+1:02d}" for i in range(30)]
-    months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-    # dates.reverse()
+    dates = [];
+    months = [];
 
-    # transposed_data = []
-    # for i in range(30):
-    #     row = {'date': dates[i], 'habits': []}
-    #     for habit in habits:
-    #         row['habits'].append(habit)
-    #     transposed_data.append(row)
-
-    return render_template('monthly_view.html', habits=habits, dates=dates, months = months)
+    return render_template('monthly_view.html', habits=habits, current_time = current_time, dates=dates, months = months, current_url=request.path)
     # return render_template('monthly-view.html', transposed_data=transposed_data, habits=habits, dates=dates)
 
 
-@app.route("/profile")
-def profile():
-    return render_template('profile.html')
+@app.route("/yearly_view")
+def yearly_view():
+    current_time = datetime.now().strftime("%Y")
+
+    conn = get_db_connection()
+    habits = conn.execute('SELECT * FROM habits').fetchall()
+    conn.close()
+
+    dates = [f"{i+1:02d}" for i in range(30)]
+    months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    
+    return render_template('yearly_view.html', habits=habits, current_time=current_time, dates=dates, months=months, current_url=request.path )
+
+@app.route("/habit_details", methods=["GET"])
+def habit_details():    
+    habit_id = request.args.get("id")
+
+    conn = get_db_connection()
+    habit_row = conn.execute("SELECT * FROM habits WHERE id = ?;", habit_id).fetchone()
+    conn.close()
+
+    habit_info = {}
+
+    if habit_row:
+        habit_info["habit_name"] = habit_row["name"]
+        habit_info["type"] = habit_row["type"]
+        habit_info["value"] = habit_row["value"]
+
+    return render_template('habit_details.html', habit_info=habit_info)
+
+@app.route("/new_habit")
+def new_habit():
+    return render_template('new_habit.html')
+
+
 
 @app.route("/mark_done/<int:habit_id>", methods=["POST"])
 def mark_done(habit_id):
     conn = get_db_connection()
-    conn.execute('UPDATE habits SET done = 1 WHERE id = ?', (habit_id,))
+    conn.execute('UPDATE habits SET done = 1 WHERE id = ?;', (habit_id,))
     conn.commit()
     conn.close()
     return '', 204 # No content
-
 
 if __name__ == "__main__":
     app.run(debug=True)

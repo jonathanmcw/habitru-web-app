@@ -1,68 +1,81 @@
 {% extends "layout.html" %}
 {% block main %}
-    <div class="nav">
-        <div class="left">
-            <!-- <a href="/profile">Profile</a> -->
-            <strong>Daily</strong>
-            <a href="/monthly_view">Monthly</a>
-        </div>
-        <h1 class="year">< {{ current_time }} ></h1>
-        <div class="right">
-            <button class="add-habit-item">+</button>
-        </div>
-    </div>
-    <form method="post">
-        <div id="daily-view" class="container">        
-            <!-- <h1>Today</h1> -->
-            {% for habit in habits %}
-            <div id="habit-{{ habit['id']}}" class="habit-item" name="{{ habit['name'] }}" value="{{ habit['value'] }}">
-                <div class="bubble-btn"></div><div class="desc"><p><strong>{{ habit['name'] }}</strong></p><p>{{ habit['value'] }}</p></div>
+<div class="main">
+
+    <div id="daily-view">        
+        <!-- <h1>Today</h1> -->
+        {% for habit in habits %}
+        <div id="habit-{{ habit['id'] }}" class="habit-item" data-id="{{ habit['id'] }}" data-name="{{ habit['name'] }}" data-value="{{ habit['value'] }}">
+            <div class="bubble-btn"></div>
+            <div class="item-details">
+                <p><strong>{{ habit['name'] }}</strong></p>
+                <p>{{ habit['value'] }}</p>
             </div>
-            {% endfor %}
         </div>
-    </form>
+        {% endfor %}
+    </div>
+    
+    <div id="done-for-today" class="container">
+        <h2>Congrats 😊 You have completed all tasks for the day</h2>
+    </div>
+</div>
+
     <script>
-        const btns = document.querySelectorAll(".habit-item");
-        let intervalId;
-        let secondsPassed = 0;
+        document.addEventListener("DOMContentLoaded", () => {
+            const btns = document.querySelectorAll(".bubble-btn");
+            const items = document.querySelectorAll(".item-details");
 
-        btns.forEach((btn) => {
-            btn.addEventListener("mousedown", () => { 
-                console.log("down");
-                intervalId = setInterval(() => {
-                    secondsPassed++;
-                    console.log(`${secondsPassed} session(s) passed`);
-                    if (secondsPassed >= 4) {
-                        clearInterval(intervalId);
-                        console.log("Timer stopped");
-                    } 
-                }, 1000);
-            }); 
-            btn.addEventListener("mouseup", () => { 
-                clearInterval(intervalId);
-                secondsPassed = 0;
-                console.log("Timer reset");
+
+            let intervalId;
+            let secondsPassed = 0;
+
+            btns.forEach((btn) => {
+                btn.addEventListener("mousedown", () => { 
+                    console.log("down");
+                    intervalId = setInterval(() => {
+                        secondsPassed++;
+                        console.log(`${secondsPassed} session(s) passed`);
+                        if (secondsPassed >= 4) {
+                            clearInterval(intervalId);
+                            console.log("Timer stopped");
+                        } 
+                    }, 1000);
+                }); 
+
+                btn.addEventListener("mouseup", () => { 
+                    clearInterval(intervalId);
+                    secondsPassed = 0;
+                    console.log("Timer reset");
+                });
+
+                btn.addEventListener("click", async (e) => { 
+                    console.log("click");
+                    // TO DO: MARK ITEM AS DONE
+                    const parent = e.target.closest('.habit-item');
+                    const habitId = parent.id.split('-')[1];
+                    const response = await fetch(`/mark_done/${habitId}`, {method: 'POST'});
+                    
+                    if (response.ok) {
+                        parent.classList.add('fade-out');
+                        setTimeout(() => {
+                            parent.remove();
+                        }, 500); // To match with the duration of CSS transition
+                    } else {
+                        console.error('Failed to mark item as done');
+                    }                
+                    // COUNT NUMBER OF HABIT ITEMS, THEN TO SHOW THEM
+                });                
             });
 
-            btn.addEventListener("click", async (e) => { 
-                console.log("click");
-                // TO DO: MARK ITEM AS DONE
-                const parent = e.target.closest('.habit-item');
-                const habitId = parent.id.split('-')[1];
-                const response = await fetch(`/mark_done/${habitId}`, {method: 'POST'});
-                
-                if (response.ok) {
-                    parent.classList.add('fade-out');
-                    setTimeout(() => {
-                        parent.remove();
-                    }, 500); // To match with the duration of CSS transition
-                } else {
-                    console.error('Failed to mark item as done');
-                }
-                 
+            items.forEach((item) => {
+                item.addEventListener("click", (e) => {
+                    const parent = e.target.closest('.habit-item');
+                    window.location.href = `/habit_details?id=${parent.dataset.id}`;
+
+                })
             });
+
         });
-        // btn.addEventListener("click", );
     </script>
 
 {% endblock %}

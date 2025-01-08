@@ -3,9 +3,7 @@
     --standard-width: 380px;
 }
 
-*,
-*::before,
-*::after {
+*, *::before, *::after {
     box-sizing: border-box;
 }
 
@@ -17,72 +15,100 @@ body {
     background-color: #fff;
     color: #000;
     font-family: Arial, Helvetica, sans-serif;
+    
 }
 
 h1{
     /* margin-bottom: 0px; */
 }
 
-button {
+button, .button {
+    display:block;
+    padding: 8px 16px;
     min-height: 40px; 
     background-color: #666;
     color: #fff;
     cursor: pointer;
     border-radius: 5px;
-    width: var(--standard-width);
+    text-decoration-line: none;
 }
 
 .nav {
-    display:block;
-    /* position: fixed; */
+    display:flex;
+    flex-direction: row;
     top:0px;
     z-index: 1000;
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    /* padding: 0 8px 16px; */
     min-height: 64px; 
-
-    background: linear-gradient(to bottom, #eee, transparent);
-    /* height: 48px; */
-    /* border-bottom: solid 1px #ccc; */
+    /* background: linear-gradient(to bottom, #eee, transparent); */
 }
 
-.nav > .left {
-    left: 0;
-    display: flex;
-    gap: 16px;
+.nav div {
+    flex: 1 1 0%;
+}
+
+.nav .left {
     padding-left: 16px;
 }
 
-.nav > .right {
-    right: 0;
+.nav .middle {
+    text-align: center;
+}
+
+.nav .middle .active {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.nav .right {
+    display: flex;
+}
+
+.nav .right a {
+    /* display: block; */
+    margin-left: auto;
     padding-right: 16px;
 }
 
-/* Daily View */
-
-#daily-view.container {
-    padding-top: 88px;
+/* Main container */
+.main {
     display: flex;
-    margin-top: 120px; 
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    
+    padding: 24px 0;
+    gap: 16px;
+}
+
+.main div {
+    width: 100%;
+    gap: 16px;
+}
+
+/* Daily View */
+#daily-view {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+#done-for-today {
+    display: none;
 }
 
 .habit-item {
     display: flex;
-    width: var(--standard-width);
-    flex-direction: row;
-    background-color: #fff;
-    min-height: 48px;
-    padding: 16px 16px; 
     gap: 12px;
-    border-radius: 6px;
+    flex-direction: row;
+    min-height: 48px;
+    padding: 16px 16px;
+    border-radius: 12px;     
     transition: opacity 0.2s ease-in, margin-top 0.5s ease-in-out; /* Add transition for disappearing at margin-top*/
+    border: 1px solid #ddd;
+    box-shadow: 0 0 7px rgba(0, 0, 0, 0.17); /* Add drop shadow with 5px blur */
+    background-color: #fff;
 }
 
 .habit-item.fade-out {
@@ -105,16 +131,24 @@ button {
     height: 40px;
     background-color: white;
     border-radius: 16rem;
-    border: 2px solid lightgrey;
+    border: 3px solid lightgrey;
 }
 
-.habit-item > .desc {
+.habit-item > .bubble-btn:hover {
+    background-color: #eee;
+}
+
+.habit-item > .item-details {
     flex-direction: column;
     /* gap: 0px; */
 }
 
-.habit-item > .desc > p {
+.habit-item > .item-details > p {
     margin: 0px
+}
+
+#done-for-today {
+    display: no;
 }
 
 .add-habit-item {
@@ -132,12 +166,6 @@ button {
     text-align: center;
     user-select: none; 
     font-size: 28px;
-    /* transition: margin-top 0.3s ease-out, 
-        width 0.3s ease-out, 
-        padding 0.3s ease-out, 
-        background-color 0.3s ease-out, 
-        color 0.3s ease-out; */
-    /* transition:cubic-bezier(1, 0, 0, 1); */
 }
 
 .add-habit-item:hover {
@@ -149,18 +177,17 @@ button {
 }
 
 /* Monthly view */
-
 .nav > .middle {
 }
-
+/* 
 section.header {
     height: 120px;
-}
+} */
 
 #monthly-view.container {
     /* padding-top: 128px; */
     position: relative;
-    top: 64px;
+    /* top: 64px; */
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -214,4 +241,16 @@ section.header {
 }
 
 /* might as well record those pop bubble sound */
+
+/* Track new habit */
+#new-habit.container > form {
+    display: flex;
+    flex-direction: column;
+    /* gap: 16px; */
+}
+
+#habit-tracking-form > * {
+    padding: 8px; 
+    margin-bottom: 16px;
+}
 

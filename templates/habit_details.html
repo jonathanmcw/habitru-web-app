@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block title %}Habit Detail{% endblock %}
+{% block navbar %}
+    <nav class="nav">
+        <div class="left">
+            <a href="javascript:history.back()">< Back</a>
+        </div>
+        <div class="middle"></div>
+        <div class="right">
+            <a href="">Edit</a>
+        </div>
+    </nav>
+{% endblock %}
+{% block main %}
+
+<div class="main">
+    <h1>{{ habit_info["habit_name"] }}</h1>
+
+    <form action="/daily_view" method="post">
+        <button id="mark-as-done" type="submit">Mark as done</button>
+    </form>
+
+    <!-- This is habit detail / some picture or image to visualise what success looks like     -->
+
+    
+
+
+</div>
+
+<script>
+    // document.addEventListener("DOMContentLoaded", () => {
+    //     const doneBtn = document.getElementById("mark-as-done");
+    //     doneBtn.addEventListener("click", () => {
+            
+    //     });
+    // });
+</script>
+{% endblock %}

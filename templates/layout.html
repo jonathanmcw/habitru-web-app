@@ -4,9 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/static/style.css" rel="stylesheet">
-    <title>Habitru</title>
+    <title>{% block title%} Habitru {% endblock %}</title>
 </head>
 <body>
+    {% block navbar %}
+    <nav class="nav">
+        <div class="left">
+            <!-- <a href="/profile">Profile</a> -->
+            <h1 class="title">
+                {{ current_time }}
+            </h1>
+        </div>
+        <div class="middle">
+            <a href="/daily_view" class="{{ 'active' if current_url == '/daily_view' else '' }}">Daily</a> | 
+            <a href="/monthly_view" class="{{ 'active' if current_url == '/monthly_view' else '' }}">Monthly</a> | 
+            <a href="/yearly_view" class="{{ 'active' if current_url == '/yearly_view' else '' }}">Yearly</a>
+        </div>
+        <div class="right">
+            <a href="/new_habit" class="add-habit-item">+</a>
+        </div>
+    </nav>
+    {% endblock %}
     {% block main %}{% endblock %}
 </body>
 </html>
