@@ -15,24 +15,24 @@
 
 <div class="main">
     <h1>{{ habit_info["habit_name"] }}</h1>
-
-    <form action="/daily_view" method="post">
-        <button id="mark-as-done" type="submit">Mark as done</button>
-    </form>
-
+    <button id="done-btn" type="submit">Mark as done</button>
+    <!-- {{ habit_info["id"]}} -->
     <!-- This is habit detail / some picture or image to visualise what success looks like     -->
-
-    
-
-
 </div>
 
 <script>
-    // document.addEventListener("DOMContentLoaded", () => {
-    //     const doneBtn = document.getElementById("mark-as-done");
-    //     doneBtn.addEventListener("click", () => {
-            
-    //     });
-    // });
+    document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("done-btn");
+        btn.addEventListener("click", async (e) => {
+            const habitId = "{{ habit_info['id']}}";
+            const response = await fetch(`/mark_done/${habitId}`, {method: 'POST'});
+
+            if (response.ok) {
+                window.location.href = `/daily_view`;
+            } else {
+                console.error('Fail to mark item as done');
+            }
+        });
+    });
 </script>
 {% endblock %}

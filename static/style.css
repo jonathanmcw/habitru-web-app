@@ -184,7 +184,7 @@ section.header {
     height: 120px;
 } */
 
-#monthly-view.container {
+#yearly-view.container {
     /* padding-top: 128px; */
     position: relative;
     /* top: 64px; */
@@ -195,7 +195,7 @@ section.header {
     /* height: 100vh;  */
 }
 
-#monthly-view.container > .content {
+#yearly-view.container > .content {
     display: flex; 
     flex-direction: row;
     justify-content: center;

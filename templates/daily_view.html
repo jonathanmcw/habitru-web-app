@@ -9,7 +9,7 @@
             <div class="bubble-btn"></div>
             <div class="item-details">
                 <p><strong>{{ habit['name'] }}</strong></p>
-                <p>{{ habit['value'] }}</p>
+                <!-- <p>{{ habit['value'] }}</p> -->
             </div>
         </div>
         {% endfor %}
@@ -49,8 +49,8 @@
                 });
 
                 btn.addEventListener("click", async (e) => { 
-                    console.log("click");
-                    // TO DO: MARK ITEM AS DONE
+
+                    // MARK ITEM AS DONE
                     const parent = e.target.closest('.habit-item');
                     const habitId = parent.id.split('-')[1];
                     const response = await fetch(`/mark_done/${habitId}`, {method: 'POST'});
@@ -63,7 +63,6 @@
                     } else {
                         console.error('Failed to mark item as done');
                     }                
-                    // COUNT NUMBER OF HABIT ITEMS, THEN TO SHOW THEM
                 });                
             });
 
