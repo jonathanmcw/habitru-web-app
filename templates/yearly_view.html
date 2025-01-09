@@ -1,52 +1,99 @@
 {% extends "layout.html" %}
 {% block main %}    
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const bubbles = document.querySelectorAll(".bubble-sm");
-        bubbles.forEach((bubble) => {
-            bubble.addEventListener("mouseover", (e) => {
-                const mouseX = e.pageX;
-                const mouseY = e.pageY;
-                const bubbleInFocus = document.createElement("div");
-                bubbleInFocus.classList.add("bubbleInFocus");
-                document.body.appendChild(bubbleInFocus);
-                bubbleInFocus.style.left = `${e.pageX - 12}px`;
-                bubbleInFocus.style.top = `${e.pageY - 12}px`;
-                const summary = document.getElementById("activity-summary");
-                // summary.textContent = e.target.attribute("id");
-            });
-            bubble.addEventListener("mouseout", () => {
-                const bubbleInFocus = document.querySelector(".bubbleInFocus");
-                if (bubbleInFocus) {
-                    bubbleInFocus.remove();
-                }
-            });
-        });
-    });
-</script>
-    <!-- <h1>summary goes here</h1> -->
-    <div id="yearly-view" class="container">
-        {% for record in habit_records %}
-        <h2 class="habit-name">{{ record.name }}</h2>
-        <div class="content" data-habit-id="{{ record.habit_id }}">
-            Day {{ record.day_of_year }} | Habit ID: {{ record.habit_id }} | Name: {{ record.name }}
-        </div>
-        {% endfor %}
-
-        {% for habit in habits %}            
-        <h2 class="habit-name">{{ habit.name }}</h2>
-        <div class="content">
-            {% for week in range(52) %}
-            <div class="week-col">
-                {% for day in range(7) %}
-                  <div id="habit-{{habit.id}}-day-{{week * 7 + day + 1}}" class="bubble-sm"></div>
-                {% endfor %}
-            </div>
+<!-- <h1>summary goes here</h1> -->
+<div id="yearly-view" class="container">
+    {% for habit in habits %}
+    <h2 class="habit-name">{{ habit.name }}</h2>
+    <div class="habit-summary" data-id="{{ habit.id }}" data-name="{{ habit.name }}">
+        {% for week in range(52) %}
+        <div class="week-col">
+            {% for day in range(7) %}
+              {% set day_of_year = week * 7 + day + 1 %}
+              {% set is_done = habit_records | selectattr('habit_id', 'equalto', habit.id) | selectattr('day_of_year', 'equalto', day_of_year) | list | length > 0 %}
+              <div id="habit-{{ habit.id }}-day-{{ day_of_year }}" class="bubble-sm {% if is_done %}task-completed{% endif %}"></div>
             {% endfor %}
         </div>
         {% endfor %}
     </div>
+    {% endfor %}
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
 
-    <div class="activity-summary">Day X</div>
+        const yearlyView = document.getElementById("yearly-view");
+
+        yearlyView.addEventListener("mouseover", (e) => {
+
+            if (e.target.classList.contains("bubble-sm")) {
+
+                const bubble = e.target;
+
+                const bubbleInFocus = document.createElement("div");
+                bubbleInFocus.classList.add("bubbleInFocus");
+                bubbleInFocus.style.left = `${e.pageX - 12}px`;
+                bubbleInFocus.style.top = `${e.pageY - 12}px`;
+                document.body.appendChild(bubbleInFocus);
+               
+                if (bubble.classList.contains("task-completed")) {
+                    bubbleInFocus.classList.add("task-completed");
+                } else if (bubble.classList.contains("task-started")) {
+                    bubbleInFocus.classList.add("task-started");
+                }
+
+                const dayOfYear = parseInt(bubble.id.split("-").pop());
+                const date = new Date(new Date().getFullYear(), 0, dayOfYear);
+                const options = { day: 'numeric', month: 'short' };
+                const formattedDate = date.toLocaleDateString('en-UK', options);
+
+                const dateElement = document.createElement("div");
+                dateElement.classList.add("date-display");
+                dateElement.textContent = formattedDate;
+                bubbleInFocus.appendChild(dateElement);
+
+                // const summary = document.getElementById("activity-summary");
+                // summary.textContent = bubbleElementId;
+            }
+        });
+
+        yearlyView.addEventListener("mouseout", (e) => {
+            if (e.target.classList.contains("bubble-sm")) {
+                const bubbleInFocus = document.querySelector(".bubbleInFocus");
+                if (bubbleInFocus) {
+                    bubbleInFocus.remove();
+                }
+            }
+        });
+
+        yearlyView.addEventListener("click", (e) => {
+            if (e.target.classList.contains("bubble-sm")) {
+                const parent = e.target.closest(".habit-summary");
+
+                let dayOfYear = parseInt(e.target.id.split("-").pop());
+                dayOfYear += 1; // Some glitch that needs to fix with dayOfYear +1 to map properly
+                const date = new Date(new Date().getFullYear(), 0, dayOfYear);
+                const formattedDate = date.toISOString().split('T')[0];
+                
+                window.location.href = `/${formattedDate}/${parent.dataset.id}`;
+            }
+        });
+
+            // bubble.addEventListener("click", async (e) => { 
+            //     // MARK ITEM AS DONE
+            //     const parent = e.target.closest('.habit-item');
+            //     const habitId = parent.id.split('-')[1];
+            //     const response = await fetch(`/mark_done/${habitId}`, {method: 'POST'});
+
+            //     if (response.ok) {
+            //         parent.classList.add('fade-out');
+            //         setTimeout(() => {
+            //             parent.remove();
+            //         }, 500); // To match with the duration of CSS transition
+            //     } else {
+            //         console.error('Failed to mark item as done');
+            //     }                
+            // })
+
+        });
+    
+</script>
 {% endblock %}
-

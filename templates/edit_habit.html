@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block title %}Habitru: Add a new habit{% endblock %}
+{% block navbar %}
+    <nav class="nav">
+        <div class="left">
+            <a href="javascript:history.back()">< Back</a>
+        </div>
+    </nav>
+{% endblock %}
+{% block main %}
+    <h1>Edit Habit</h1>
+     <div id="new-habit" class="container">
+        <form name="new-habit" id="habit-tracking-form" action="{{ url_for('update_habit', habit_id=habit.id) }}" method="POST">
+            <p>Habit Name:</p>
+            <input type="hidden" name="referrer" value="{{ request.referrer }}">
+            <input type="hidden" name="action" id="form-action" value="save">
+            <input type="text" name="habit-name" placeholder="Track your meal time, exercise... and more" value="{{ habit.name }}">
+            <button id="save-button" type="submit">Save</button>
+            <button id="delete-button" type="submit" onclick="document.getElementById('form-action').value='delete';">Delete</button>
+            {% for attr in habit%}
+                <p>{{attr}}: {{habit[attr]}},</p>
+            {% endfor %}
+        </form>
+     </div>
+{% endblock %}

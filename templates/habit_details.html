@@ -7,32 +7,32 @@
         </div>
         <div class="middle"></div>
         <div class="right">
-            <a href="">Edit</a>
+            <a href="{{ url_for('update_habit', habit_id=habit.id) }}">Edit</a>
         </div>
     </nav>
 {% endblock %}
 {% block main %}
 
 <div class="main">
-    <h1>{{ habit_info["habit_name"] }}</h1>
-    <button id="done-btn" type="submit">Mark as done</button>
-    <!-- {{ habit_info["id"]}} -->
-    <!-- This is habit detail / some picture or image to visualise what success looks like     -->
+    <a href="/{{ habit.date }}">{{ habit.date }}</a>
+    <h1>{{ habit.habit_name }}</h1>
+    <form action="{{ url_for('update_status') }}" method="POST">
+        <input type="hidden" name="id" value="{{ habit.id }}">
+        <input type="hidden" name="date" value="{{ habit.date }}">
+        <input type="hidden" name="referrer" value="{{ request.referrer }}">
+        <button id="done-btn" type="submit">
+            {% if habit.status == "done"%}
+                Mark as Not Done
+            {% else %}
+                Mark as Done
+            {% endif %}
+        </button>
+    </form>
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const btn = document.getElementById("done-btn");
-        btn.addEventListener("click", async (e) => {
-            const habitId = "{{ habit_info['id']}}";
-            const response = await fetch(`/mark_done/${habitId}`, {method: 'POST'});
 
-            if (response.ok) {
-                window.location.href = `/daily_view`;
-            } else {
-                console.error('Fail to mark item as done');
-            }
-        });
-    });
 </script>
 {% endblock %}
+
+
