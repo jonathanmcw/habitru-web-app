@@ -3,7 +3,7 @@
 <section id="daily-view">
     <div id="daily-items">        
         {% for habit in habits %}
-        <div id="habit-{{ habit.id }}" class="habit-item" data-id="{{ habit.id }}" data-name="{{ habit.name }}" data-value="{{ habit.value }}" data-date="{{ selected_period.date }}">
+        <div id="habit-{{ habit.id }}" class="habit-item" data-id="{{ habit.id }}" data-name="{{ habit.name }}" data-value="{{ habit.value }}" data-date="{{ date.selected.date }}">
             <div class="bubble-btn"></div>
             <div class="item-details">
                 <p><strong>{{ habit.name }}</strong></p>

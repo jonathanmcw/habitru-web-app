@@ -11,15 +11,18 @@
     <section id="new-habit">
         <h1>Edit Habit</h1>
         <form name="new-habit" id="habit-tracking-form" action="{{ url_for('update_habit', habit_id=habit.id) }}" method="POST">
-            <p>Habit Name:</p>
+            <label>Habit Name</label>
+            <input type="hidden" name="year" value="{{ date.selected.year }}">
+            <input type="hidden" name="month" value="{{ date.selected.month }}">
+            <input type="hidden" name="day" value="{{ date.selected.day }}">
             <input type="hidden" name="referrer" value="{{ request.referrer }}">
             <input type="hidden" name="action" id="form-action" value="save">
             <input type="text" name="habit-name" placeholder="Track your meal time, exercise... and more" value="{{ habit.name }}">
             <button id="save-button" type="submit">Save</button>
             <button id="delete-button" type="submit" onclick="document.getElementById('form-action').value='delete';">Delete</button>
-            {% for attr in habit%}
+            <!-- {% for attr in habit%}
                 <p>{{attr}}: {{habit[attr]}},</p>
-            {% endfor %}
+            {% endfor %} -->
         </form>
     </section>
 {% endblock %}

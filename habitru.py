@@ -13,9 +13,11 @@ app.secret_key = 'your_secret_key'  # Needed for flashing messages
 #       [ ] Idea: keep a notebook myself to see what kind of things can / should be quantified
 #       [NEXT] Both Physical, Emotional, Social
 # > Home screen
-#       [ ] Show only habit that are not done today
-#       [ ] Go to next date 
-#       [ ] ?? Mark a task back to "not done?"
+#       [DONE] Show only habit that are not done today
+#       [ ] Go to next date
+#           [DONE] Can navigate to any date with URL
+#           [ ] Have date navigation
+#       [DONE] Mark a task back to "not done?"
 #       [DONE] Keep it very simple with as little fiddling as possible.
 #           [DONE] Click to mark item as done
 #           [NEXT] Long press to mark something not done done
@@ -33,11 +35,42 @@ app.secret_key = 'your_secret_key'  # Needed for flashing messages
 #       [NEXT] My stats and streaks :) 
 #           - any sort of insights I could dig from there
 # > Year screen
-#       [ ] Convert date into 365 and then show
-#       [ ] Show done item for the year 
+#       [Done] Convert date into 365 and then show
+#       [Done] Show done item for the year 
 # > Profile
 #       [LATER] Consider what are the needs, and whether we do need to have a family account to share success
 # > Why people procrastinate ? 
+
+def create_date_object(year=None, month=None, day=None):
+    now = datetime.now()
+
+    if year is None:
+        year = now.year
+    
+    if month is None or day is None:
+        # year = now.year / To improve later
+        month = now.month
+        day = now.day
+        
+    date = {
+        "current": {
+            "date": now.strftime("%Y/%m/%d"),
+            "year": now.strftime("%Y"),
+            "month": now.strftime("%m"),
+            "day": now.strftime("%d")
+        },
+        "selected": {
+            "date": f"{year:04}/{month:02}/{day:02}",
+            "year": f"{year:04}",
+            "month": f"{month:02}",
+            "day": f"{day:02}",
+        },
+        "db_format": {
+            "date": f"{year:04}-{month:02}-{day:02}",
+            "year": f"{year:04}%"
+        }
+    }
+    return date
 
 # Ensure no caching
 @app.after_request
@@ -57,92 +90,41 @@ def get_db_connection():
         print(f"Database connection error: {e}")
         return None
 
-# @app.route("/", defaults={"date": None}, methods=["GET", "POST"])
-# def welcome():
-#     conn = get_db_connection()
-#     if conn:
-#         habits = conn.execute('SELECT * FROM habits').fetchall()
-#         conn.close()
-#         return render_template('welcome.html', habits=habits, current_url=request.path)
-#     else:
-#         flash("Database connection error.")
-#         return render_template('welcome.html', habits=[], current_url=request.path)
-# SOME URL TRICKS WE COULD PLAY WITH BUT NEED TO SEE.... 
-
-@app.route("/", defaults={"date": None}, methods=["GET", "POST"])
-@app.route("/<year>/<month>/<day>/", methods=["GET","POST"])
-# @app.route("/2025/01/10", defaults={"date": None}, methods=["GET", "POST"])
+# Home - Simply show date of today
+@app.route("/", defaults={"year": None, "month": None, "day": None}, methods=["GET", "POST"])
+@app.route("/<int:year>/<int:month>/<int:day>/", methods=["GET","POST"])
 def daily_view(year,month,day):
 
-    selected_period = {}
-    selected_period["date"] = f"{year}/{month}/{day}"
-
-    # if date is None or not re.compile(r"^\d{4}-\d{2}-\d{2}$").match(date):
-    #     date = datetime.now().strftime("%Y/%m/%d")
-    # selected_period = date
-
-    now = datetime.now()
-    if selected_period["date"] is None or not re.compile(r"^\d{4}-\d{2}-\d{2}$").match(selected_period["date"]):
-        selected_period["date"] = now.strftime("%Y/%m/%d")
-        selected_period["year"] = now.strftime("%Y")
-        selected_period["month"] = now.strftime("%m")
-        selected_period["day"] = now.strftime("%d")
-
+    date = create_date_object(year, month, day)
     conn = get_db_connection()
+
     if conn:
         habits = conn.execute('''   
             SELECT * FROM habits 
             LEFT JOIN records ON habits.id = records.habit_id
                 AND records.date = ? AND records.status = 'done'
             WHERE records.habit_id IS NULL
-            ''', (selected_period["date"],)).fetchall()
-        # To change the date
+            ''', (date["db_format"]["date"],)).fetchall()
         conn.close()
-        return render_template('daily_view.html', habits=habits, selected_period=selected_period, current_url=request.path)
+        return render_template('daily_view.html', habits=habits, date=date, current_url=request.path)
     else:
         flash("Database connection error.")
-        return render_template('daily_view.html', habits=[], selected_period=selected_period, current_url=request.path)
+        return render_template('daily_view.html', habits=[], date=date, current_url=request.path)
 
-# @app.route("/month")
-# def monthly_view():
-
-#     selected_period = datetime.now().strftime("%Y-%m")
-#     # current_time = datetime.now().strftime("%b %Y")
-
-#     conn = get_db_connection()
-#     if conn:
-#         habits = conn.execute('SELECT * FROM habits').fetchall()
-#         conn.close()
-#         return render_template('monthly_view.html', habits=habits, selected_period=selected_period, current_url=request.path)
-#     else:
-#         flash("Database connection error.")
-#         return render_template('monthly_view.html', habits=[], selected_period=selected_period, current_url=request.path)
-
-@app.route("/<year>/")
-# @app.route("/year")
+# Year view
+@app.route("/<int:year>/")
 def yearly_view(year):
 
-    selected_period = {}
-
-    # year = "2025"
-    if year is None or not re.compile(r"^\d{4}").match(year):
-        selected_period["date"] = datetime.now().strftime("%Y/%m/%d")
-        selected_period["year"] = datetime.now().strftime("%Y")
-        selected_period["month"] = datetime.now().strftime("%m")
-        selected_period["day"] = datetime.now().strftime("%d")
-    
-    selected_period["date"] = datetime.now().strftime("%Y/%m/%d")
-    selected_period["year"] = year
-
+    date = create_date_object(year)
     conn = get_db_connection()
 
     if conn:
         habits = conn.execute('SELECT * FROM habits').fetchall()
-        q_year = f"{year}%"
+        # year_to_search = f'{date["selected"]["year"]}%'
         habit_records = conn.execute('''SELECT records.date, records.habit_id, habits.name FROM records 
                                         JOIN habits ON records.habit_id = habits.id 
                                         WHERE date LIKE ?  
-                                        ORDER BY habits.id''', (q_year,)).fetchall()
+                                        ORDER BY habits.id''', (date["db_format"]["year"],)).fetchall()
         conn.close()
 
         def date_to_day_of_year(date_str):
@@ -153,28 +135,16 @@ def yearly_view(year):
                           "habit_id": record["habit_id"], 
                           "name": record["name"]} for record in habit_records]
         
-        return render_template('yearly_view.html', selected_period=selected_period, habits=habits, habit_records=habit_records, current_url=request.path)
+        return render_template('yearly_view.html', date=date, habits=habits, habit_records=habit_records, current_url=request.path)
     else:
         flash("Database connection error.")
-        return render_template('yearly_view.html', selected_period=selected_period, habits=[], habit_records=[], current_url=request.path)
+        return render_template('yearly_view.html', date=date, habits=[], habit_records=[], current_url=request.path)
 
 # View habit details at a specific date
-# @app.route("/<date>/<int:habit_id>")
 @app.route("/<year>/<month>/<day>/<int:habit_id>", methods=["GET","POST"])
 def habit_details(year, month, day, habit_id ):    
 
-    now = datetime.now()
-    selected_period = {}
-    selected_period["date"] = f"{year}/{month}/{day}"
-
-    if selected_period["date"] is None or not re.compile(r"^\d{4}-\d{2}-\d{2}$").match(selected_period["date"]):
-        selected_period["date"] = now.strftime("%Y/%m/%d")
-        selected_period["year"] = now.strftime("%Y")
-        selected_period["month"] = now.strftime("%m")
-        selected_period["day"] = now.strftime("%d")
-    
-    date = selected_period["date"].replace("/", "-")
-
+    date = create_date_object(year, month, day)
     conn = get_db_connection()
 
     if conn:
@@ -183,7 +153,7 @@ def habit_details(year, month, day, habit_id ):
             FROM habits
             LEFT JOIN records ON records.habit_id = habits.id AND records.date = ?
             WHERE habits.id = ?  
-            ''', (date, habit_id)).fetchone()
+            ''', (date["db_format"]["date"], habit_id)).fetchone()
         
         conn.close()
         habit = {}
@@ -193,20 +163,20 @@ def habit_details(year, month, day, habit_id ):
             habit["habit_name"] = habit_row["name"]
             habit["type"] = habit_row["type"]
             habit["value"] = habit_row["value"]
-            habit["date"] = date
+            habit["date"] = date["selected"]["date"] # Changed format 
             habit["status"] = habit_row["status"] if habit_row["status"] else "not started"
-        return render_template('habit_details.html', habit=habit)
+        return render_template('habit_details.html', habit=habit, date=date)
     
     else:
         flash("Database connection error.")
-        return render_template('habit_details.html', habit={})
+        return render_template('habit_details.html', habit={}, date={})
 
 # Add new habit to TABLE "habits" 
 # TODO: Should be /habit/new in the long run, with a list of current habits to review 
 @app.route("/new_habit", methods=["GET","POST"])
 def new_habit():
 
-    selected_period = datetime.now().strftime("%Y-%m-%d")
+    date = create_date_object()
 
     # ADD new habit
     if request.method == "POST":
@@ -219,10 +189,10 @@ def new_habit():
 
         if conn:
             conn.execute("INSERT INTO habits (name, type, value, description, start_date, frequency) VALUES (?, ?, ?, ?, ?, ?)", 
-                         (habit_name, "to_do", "none", "empty", selected_period, "daily_view"))
+                         (habit_name, "to_do", "none", "empty", date["db_format"]["date"], "daily_view"))
             conn.commit()
             conn.close()
-            return redirect(url_for('daily_view'))
+            return redirect(url_for('daily_view', year= date["selected"]["year"],  month= date["selected"]["month"],  day= date["selected"]["day"]))
         else:
             flash("Database connection error.")
             return redirect(request.referrer or url_for('daily_view'))
@@ -235,7 +205,13 @@ def new_habit():
 def update_habit(habit_id):
     action = request.form.get("action")
     habit_name = request.form.get("habit-name")
-    referrer = request.form.get("referrer")
+    # referrer = request.form.get("referrer")
+
+    year = request.form.get("year")
+    month = request.form.get("month")
+    day = request.form.get("day")
+
+    date = create_date_object(year, month, day)
 
     conn = get_db_connection()
     if conn:
@@ -248,15 +224,16 @@ def update_habit(habit_id):
                 conn.commit()
                 flash("Habit update successfully.")
                 conn.close()
-                return redirect(url_for('yearly_view'))
+                return redirect(url_for('daily_view'))
             
             elif action == "delete":
                 conn.execute("DELETE FROM habits WHERE id = ?", (habit_id,))
+                conn.execute("DELETE FROM records WHERE habit_id = ?", (habit_id,))
                 conn.commit()
                 flash("Habit deleted successfully")
                 conn.close()
-                return redirect(url_for('yearly_view'))
-        
+                return redirect(url_for('daily_view'))
+            
         else:
             # Should be the editing form
             habit_row = conn.execute("SELECT * FROM habits WHERE id = ?;", (habit_id,)).fetchone()
@@ -268,7 +245,7 @@ def update_habit(habit_id):
                 for key in habit_row.keys():
                     habit[key] = habit_row[key]
 
-            return render_template('edit_habit.html', habit=habit)
+            return render_template('edit_habit.html', habit=habit, date=date)
     else:
         flash("Database connection error.")
         return redirect(url_for('daily_view'))
@@ -279,7 +256,7 @@ def update_habit(habit_id):
 @app.route("/update_status", methods=["POST"])
 def update_status():
     habit_id = request.form.get("id")
-    task_date = request.form.get("date")
+    task_date = request.form.get("date").replace("/", "-")
     referrer = request.form.get("referrer")
     
     conn = get_db_connection()

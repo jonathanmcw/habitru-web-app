@@ -8,44 +8,45 @@
     </nav>
 {% endblock %}
 {% block main %}
+<section id="new-habit" class="container">
     <h1>Add a new habit</h1>
-     <div id="new-habit" class="container">
-        <form name="new-habit" id="habit-tracking-form" action="{{ url_for('new_habit') }}" method="POST">
-            <p>Habit Name:</p>
-            <input type="hidden" name="referrer" value="{{ request.referrer }}">
-            <input type="text" name="habit-name" placeholder="Track your meal time, exercise... and more">
-            <p>Current version: type: "to_do" value: "none" start_date: "today", frequency: "daily"</p>
-            <!-- <p>New habit to be marked as done, and tracked by user everyday</p> -->
-            <!-- <input type="text" name="" id="" placeholder="Description"> -->
-            <!-- <fieldset>
-                <legend>Measure Unit</legend>
-                <label>
-                    <input type="radio" name="tracking-method" value="by-task">
-                    By Task
-                </label>
-                <label>
-                    <input type="radio" name="tracking-method" value="with-timer"/>
-                    With Timer
-                </label>
-                <label>
-                    <input type="radio" name="tracking-method" value="with-quantity">
-                    With Quantity
-                </label>
-            </fieldset>
-            <fieldset>
-                <legend>Frequency</legend>
-                <label>
-                    <input type="radio" name="tracking-frequency" value="daily">
-                    Daily
-                </label>
-                <label>
-                    <input type="radio" name="tracking-frequency" value="weekly">
-                    Weekly
-                </label>
-            </fieldset> -->
-            <button id="submit-form" type="submit">Submit</button>
-        </form>
-     </div>
+    <form name="new-habit" id="habit-tracking-form" action="{{ url_for('new_habit') }}" method="POST">
+        
+        <input type="hidden" name="referrer" value="{{ request.referrer }}">
+        <label>Habit Name</label>
+        <input type="text" name="habit-name" placeholder="Track your meal time, exercise... and more">
+        <!-- <p>Current version: type: "to_do" value: "none" start_date: "today", frequency: "daily"</p> -->
+        <!-- <p>New habit to be marked as done, and tracked by user everyday</p> -->
+        <!-- <input type="text" name="" id="" placeholder="Description"> -->
+        <!-- <fieldset>
+            <legend>Measure Unit</legend>
+            <label>
+                <input type="radio" name="tracking-method" value="by-task">
+                By Task
+            </label>
+            <label>
+                <input type="radio" name="tracking-method" value="with-timer"/>
+                With Timer
+            </label>
+            <label>
+                <input type="radio" name="tracking-method" value="with-quantity">
+                With Quantity
+            </label>
+        </fieldset>
+        <fieldset>
+            <legend>Frequency</legend>
+            <label>
+                <input type="radio" name="tracking-frequency" value="daily">
+                Daily
+            </label>
+            <label>
+                <input type="radio" name="tracking-frequency" value="weekly">
+                Weekly
+            </label>
+        </fieldset> -->
+        <button id="submit-form" type="submit">Submit</button>
+</form>
+</section>
      <!-- <script>
         document.addEventListener("DOMContentLoaded", (e) => {
             

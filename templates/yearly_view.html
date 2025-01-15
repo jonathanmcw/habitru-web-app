@@ -3,7 +3,7 @@
 <section id="yearly-view" class="container">
     {% for habit in habits %}
     <h2 class="habit-name">{{ habit.name }}</h2>
-    <div class="habit-summary" data-id="{{ habit.id }}" data-name="{{ habit.name }}">
+    <div class="habit-summary" data-id="{{ habit.id }}" data-name="{{ habit.name }}" data-year="{{ date.selected.year }}">
         {% for week in range(52) %}
         <div class="week-col">
             {% for day in range(7) %}
@@ -69,7 +69,10 @@
 
                 let dayOfYear = parseInt(e.target.id.split("-").pop());
                 dayOfYear += 1; // Some glitch that needs to fix with dayOfYear +1 to map properly
-                const date = new Date(new Date().getFullYear(), 0, dayOfYear);
+                
+                const currentYear = parent.dataset.year;
+
+                const date = new Date(currentYear, 0, dayOfYear);
                 const formattedDate = date.toISOString().split('T')[0].replace(/-/g, '/');
                 
                 const habitId = parent.dataset.id;

@@ -5,7 +5,9 @@
         <div class="left">
             <a href="javascript:history.back()">< Back</a>
         </div>
-        <div class="middle"></div>
+        <div class="middle">
+            <a href="/{{ habit.date }}">{{ habit.date }}</a>
+        </div>
         <div class="right">
             <a href="{{ url_for('update_habit', habit_id=habit.id) }}">Edit</a>
         </div>
@@ -13,17 +15,14 @@
 {% endblock %}
 {% block main %}
     <section class="main">
-        <a href="/{{ habit.date }}">{{ habit.date }}</a>
         <h1>{{ habit.habit_name }}</h1>
         <form action="{{ url_for('update_status') }}" method="POST">
             <input type="hidden" name="id" value="{{ habit.id }}">
             <input type="hidden" name="date" value="{{ habit.date }}">
             <input type="hidden" name="referrer" value="{{ request.referrer }}">
-            <button id="done-btn" type="submit">
-                {% if habit.status == "done"%}
-                    Mark as Not Done
-                {% else %}
-                    Mark as Done
+            <button id="done-btn" type="submit" class="{{habit.status}}">
+                {% if habit.status == "done"%}Mark as Not Done
+                {% else %}Mark as Done
                 {% endif %}
             </button>
         </form>
