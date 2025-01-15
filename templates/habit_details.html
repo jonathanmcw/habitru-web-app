@@ -12,27 +12,20 @@
     </nav>
 {% endblock %}
 {% block main %}
-
-<div class="main">
-    <a href="/{{ habit.date }}">{{ habit.date }}</a>
-    <h1>{{ habit.habit_name }}</h1>
-    <form action="{{ url_for('update_status') }}" method="POST">
-        <input type="hidden" name="id" value="{{ habit.id }}">
-        <input type="hidden" name="date" value="{{ habit.date }}">
-        <input type="hidden" name="referrer" value="{{ request.referrer }}">
-        <button id="done-btn" type="submit">
-            {% if habit.status == "done"%}
-                Mark as Not Done
-            {% else %}
-                Mark as Done
-            {% endif %}
-        </button>
-    </form>
-</div>
-
-<script>
-
-</script>
+    <section class="main">
+        <a href="/{{ habit.date }}">{{ habit.date }}</a>
+        <h1>{{ habit.habit_name }}</h1>
+        <form action="{{ url_for('update_status') }}" method="POST">
+            <input type="hidden" name="id" value="{{ habit.id }}">
+            <input type="hidden" name="date" value="{{ habit.date }}">
+            <input type="hidden" name="referrer" value="{{ request.referrer }}">
+            <button id="done-btn" type="submit">
+                {% if habit.status == "done"%}
+                    Mark as Not Done
+                {% else %}
+                    Mark as Done
+                {% endif %}
+            </button>
+        </form>
+    </section>
 {% endblock %}
-
-

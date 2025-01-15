@@ -1,7 +1,6 @@
 {% extends "layout.html" %}
 {% block main %}    
-<!-- <h1>summary goes here</h1> -->
-<div id="yearly-view" class="container">
+<section id="yearly-view" class="container">
     {% for habit in habits %}
     <h2 class="habit-name">{{ habit.name }}</h2>
     <div class="habit-summary" data-id="{{ habit.id }}" data-name="{{ habit.name }}">
@@ -16,7 +15,7 @@
         {% endfor %}
     </div>
     {% endfor %}
-</div>
+</section>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
 
@@ -71,9 +70,12 @@
                 let dayOfYear = parseInt(e.target.id.split("-").pop());
                 dayOfYear += 1; // Some glitch that needs to fix with dayOfYear +1 to map properly
                 const date = new Date(new Date().getFullYear(), 0, dayOfYear);
-                const formattedDate = date.toISOString().split('T')[0];
+                const formattedDate = date.toISOString().split('T')[0].replace(/-/g, '/');
                 
-                window.location.href = `/${formattedDate}/${parent.dataset.id}`;
+                const habitId = parent.dataset.id;
+                const url = `/${formattedDate}/${habitId}`;
+                window.location.href = url;
+                // url_for "habit_details"
             }
         });
 

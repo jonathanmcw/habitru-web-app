@@ -12,14 +12,14 @@
         <div class="left">
             <!-- <a href="/profile">Profile</a> -->
             <h1 class="title">
-                {{ selected_period }}
+                {{ selected_period.year }}
             </h1>
         </div>
         <div class="middle">
             <!-- TODO: NEED TO FIX DATE NAVIGATION -->
-            <a href="/2025/01/10" class="{{ 'active' if current_url == '/{{selected_period}}' else '' }}">Today</a> | 
+            <a href="/{{ selected_period.date }}/" class="{{ 'active' if current_url == '/{{selected_period}}/' else '' }}">Today</a> | 
             <!-- <a href="/month" class="{{ 'active' if current_url == '/month' else '' }}">Monthly</a> |  -->
-            <a href="/year" class="{{ 'active' if current_url == '/year' else '' }}">Summary</a>
+            <a href="/{{ selected_period.year }}/" class="{{ 'active' if current_url == '/year' else '' }}">Summary</a>
         </div>
         <div class="right">
             <a href="/new_habit" class="add-habit-item">+</a>

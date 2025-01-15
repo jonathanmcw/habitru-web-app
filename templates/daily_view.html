@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% block main %}
-<div class="main">
-    <div id="daily-view">        
+<section id="daily-view">
+    <div id="daily-items">        
         {% for habit in habits %}
-        <div id="habit-{{ habit.id }}" class="habit-item" data-id="{{ habit.id }}" data-name="{{ habit.name }}" data-value="{{ habit.value }}" data-date="{{ selected_period }}">
+        <div id="habit-{{ habit.id }}" class="habit-item" data-id="{{ habit.id }}" data-name="{{ habit.name }}" data-value="{{ habit.value }}" data-date="{{ selected_period.date }}">
             <div class="bubble-btn"></div>
             <div class="item-details">
                 <p><strong>{{ habit.name }}</strong></p>
@@ -16,7 +16,7 @@
         <h2>Congrats 😊</h2>
         <p>You have completed all tasks for the day</p>
     </div>
-</div>
+</section>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -80,10 +80,8 @@
                     setTimeout(() => {
                         doneForToday.classList.add("visible");
                     }, 1000);
-                }
-                
+                } 
             });
-
         });
 
         // VIEW HABIT DETAILS

@@ -8,8 +8,8 @@
     </nav>
 {% endblock %}
 {% block main %}
-    <h1>Edit Habit</h1>
-     <div id="new-habit" class="container">
+    <section id="new-habit">
+        <h1>Edit Habit</h1>
         <form name="new-habit" id="habit-tracking-form" action="{{ url_for('update_habit', habit_id=habit.id) }}" method="POST">
             <p>Habit Name:</p>
             <input type="hidden" name="referrer" value="{{ request.referrer }}">
@@ -21,5 +21,5 @@
                 <p>{{attr}}: {{habit[attr]}},</p>
             {% endfor %}
         </form>
-     </div>
+    </section>
 {% endblock %}
